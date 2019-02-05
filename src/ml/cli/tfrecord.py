@@ -1,10 +1,7 @@
 import glob
-import re
 import os
 from os.path import join, basename, dirname
-from pprint import pprint as pp
 from multiprocessing.dummy import Pool as ThreadPool
-from random import randint
 import tensorflow as tf
 
 
@@ -13,6 +10,7 @@ def _int64_feature(value):
 
 
 def _bytes_feature(value):
+    value = tf.compat.as_bytes(value)
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
 
@@ -30,17 +28,17 @@ def create_data_sets(path):
         return labels.get(basename(dirname(dirname(filepath))))
 
     def get_image_raw(filepath):
-        try:
-            with tf.gfile.GFile(filepath, 'rb') as f:
-                return f.read()
-        except UnicodeEncodeError:
-            print(filepath)
+        with tf.gfile.GFile(filepath, 'rb') as f:
+            return f.read()
 
     def make_data_set(index):
         pathname = os.path.join(path, '**/*-{}/*.jpg'.format(index))
         filepaths = glob.glob(pathname, recursive=True)
-        data_set = ((basename(filepath), get_label(filepath),
-                     get_image_raw(filepath)) for filepath in filepaths)
+        data_set = ((
+            get_image_raw(filepath),
+            get_label(filepath),
+            basename(filepath)
+        ) for filepath in filepaths)
         return data_set
     # data-0 ~ data-5 split
     data_sets = [make_data_set(index) for index in range(6)]
@@ -53,13 +51,13 @@ def convert_to(data_set, name):
         '/tmp/test', name + '.tfrecords')
     print('Writing', tf_record_filename)
     with tf.io.TFRecordWriter(tf_record_filename) as writer:
-        for filename, label, image_raw in data_set:
+        for image_raw, label, filename in data_set:
             example = tf.train.Example(
                 features=tf.train.Features(
                     feature={
+                        'image_raw': _bytes_feature(image_raw),
                         'label': _int64_feature(label),
-                        'filename'
-                        'image_raw': _bytes_feature(image_raw)
+                        'filename': _bytes_feature(filename),
                     }))
             writer.write(example.SerializeToString())
 

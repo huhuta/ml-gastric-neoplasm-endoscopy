@@ -11,6 +11,7 @@ required_packages = [
     'docopt',
     'sklearn',
     'pandas',
+    'Pillow',
 ]
 
 setup(
