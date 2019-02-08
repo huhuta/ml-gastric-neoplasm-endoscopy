@@ -5,13 +5,8 @@ import sys
 from setuptools import setup, find_packages
 
 required_packages = [
-    'docopt',
     'matplotlib',
-    'scipy',
-    'docopt',
     'sklearn',
-    'pandas',
-    'Pillow',
 ]
 
 setup(
@@ -27,7 +22,5 @@ setup(
     author="huhuta",
     url='https://github.com/huhuta/ml-gastric-neoplasm-endoscopy',
     license="MIT",
-    install_requires=required_packages,
-    entry_points={
-        'console_scripts': ['mlcli=ml.cli.main:main'],
-    })
+    install_requires=required_packages
+)
