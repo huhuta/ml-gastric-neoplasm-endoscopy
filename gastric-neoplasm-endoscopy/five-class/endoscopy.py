@@ -8,8 +8,6 @@ from ml.input_pipeline import \
     NUM_TRAIN, NUM_VALIDATION
 from ml.models import finetune_model
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '5'
-
 DATA_DIR = '~/work/models/neoplasm/data'
 NUM_CLASSES = 2
 BATCH_SIZE = 20
@@ -41,7 +39,6 @@ def main():
         validation_data=validation_data,
         steps_per_epoch=int(np.ceil(NUM_TRAIN / BATCH_SIZE)),
         validation_steps=int(np.ceil(NUM_VALIDATION / BATCH_SIZE)))
-    print((history.history['val_acc']))
 
 
 if __name__ == "__main__":
